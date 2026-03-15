@@ -44,8 +44,7 @@ jobs:
           cache: pip
 
       - name: Install dependencies
-        run: |
-          pip install 'jupyter-book<2' numpy matplotlib scipy
+        run: pip install -r requirements.txt
 
       - name: Log trigger info
         run: |
