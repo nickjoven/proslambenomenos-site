@@ -1,0 +1,34 @@
+# Add this workflow to each source repo:
+#   .github/workflows/notify-site.yml
+#
+# Requires a repository secret SITE_DISPATCH_TOKEN with a GitHub PAT
+# that has `repo` scope on the site repository.
+
+name: Notify Site Rebuild
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**.ipynb"
+      - "**.md"
+      - "**.html"
+      - "docs/**"
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch site rebuild
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.SITE_DISPATCH_TOKEN }}
+          repository: nickjoven/proslambenomenos-site
+          event-type: source-updated
+          client-payload: >-
+            {
+              "repository": "${{ github.repository }}",
+              "ref": "${{ github.ref }}",
+              "sha": "${{ github.sha }}",
+              "actor": "${{ github.actor }}"
+            }

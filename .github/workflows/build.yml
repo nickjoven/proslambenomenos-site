@@ -1,0 +1,74 @@
+name: Build and Deploy Site
+
+on:
+  # Trigger from source repo dispatches
+  repository_dispatch:
+    types: [source-updated]
+
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Reason for manual rebuild"
+        required: false
+
+  # Scheduled fallback — daily at 06:00 UTC
+  schedule:
+    - cron: "0 6 * * *"
+
+  # Build on pushes to main (site repo's own changes)
+  push:
+    branches: [main]
+
+# Only allow one build at a time
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout site repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install jupyter nbconvert numpy matplotlib scipy
+
+      - name: Log trigger info
+        run: |
+          echo "Trigger: ${{ github.event_name }}"
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            echo "Source: ${{ github.event.client_payload.repository }}"
+            echo "Ref: ${{ github.event.client_payload.ref }}"
+            echo "SHA: ${{ github.event.client_payload.sha }}"
+          fi
+
+      - name: Build site
+        run: python build.py
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
