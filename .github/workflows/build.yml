@@ -41,9 +41,11 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: pip
 
       - name: Install dependencies
-        run: pip install jupyter nbconvert numpy matplotlib scipy
+        run: |
+          pip install 'jupyter-book<2' numpy matplotlib scipy
 
       - name: Log trigger info
         run: |
@@ -54,13 +56,13 @@ jobs:
             echo "SHA: ${{ github.event.client_payload.sha }}"
           fi
 
-      - name: Build site
+      - name: Fetch sources and build Jupyter Book
         run: python build.py
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: _build
+          path: book/_build/html
 
   deploy:
     needs: build
