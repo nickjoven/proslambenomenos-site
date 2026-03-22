@@ -79,6 +79,24 @@ REPOS = {
         "title": "Intersections",
         "subtitle": "Stick-slip dynamics and galaxy rotation",
     },
+    "harmonics": {
+        "github": "nickjoven/harmonics",
+        "files": [
+            "sync_cost/FRAMEWORK.md",
+            "sync_cost/derivations/INDEX.md",
+            "sync_cost/derivations/01_born_rule.md",
+            "sync_cost/derivations/02_spectral_tilt.md",
+            "sync_cost/derivations/03_a0_threshold.md",
+            "sync_cost/derivations/04_spectral_tilt_reframed.md",
+            "sync_cost/derivations/05_two_forces.md",
+            "sync_cost/derivations/06_planck_scale.md",
+            "sync_cost/derivations/07_measurement_collapse.md",
+            "sync_cost/derivations/08_high_z_mond.md",
+        ],
+        "order": 4,
+        "title": "Harmonics",
+        "subtitle": "Synchronization cost and the mode-locking substrate",
+    },
 }
 
 # Extra data files needed for notebook execution
@@ -269,12 +287,15 @@ Three constants. One frequency. Zero free parameters.
    SPARC-X numerical verification on 175 galaxies
 3. **Intersections** — the physical mechanism: stick-slip dynamics, Lagrangian relaxation,
    QCD parallels, Feigenbaum universality
+4. **Harmonics** — the synchronization cost framework: mode-locking substrate, Born rule
+   from basin geometry, $a_0$ as cost equality, spectral tilt, Planck scale thresholds
 
 ## Source repositories
 
 - [proslambenomenos](https://github.com/nickjoven/proslambenomenos) — the self-contained preprint
 - [201](https://github.com/nickjoven/201) — the numerical framework
 - [intersections](https://github.com/nickjoven/intersections) — the physical substrate
+- [harmonics](https://github.com/nickjoven/harmonics) — the synchronization cost derivations
 
 All notebooks on this site are **executed during build** — outputs are computed,
 not pre-rendered. The source is the truth.
