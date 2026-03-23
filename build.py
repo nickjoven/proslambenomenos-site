@@ -94,6 +94,7 @@ REPOS = {
             "sync_cost/derivations/08_high_z_mond.md",
             "sync_cost/derivations/09_fidelity_bound.md",
             "sync_cost/derivations/10_minimum_alphabet.md",
+            "sync_cost/derivations/11_rational_field_equation.md",
         ],
         "order": 4,
         "title": "Harmonics",
