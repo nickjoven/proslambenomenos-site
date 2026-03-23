@@ -265,43 +265,61 @@ def generate_intro():
     intro = """\
 # Proslambenomenos
 
-**The added tone: a fundamental reference frequency for synchronization gravity.**
-
 N. Joven — 2026 — [ORCID 0009-0008-0679-0812](https://orcid.org/0009-0008-0679-0812) — CC0 1.0
 
 ---
 
-In ancient Greek music theory, the *proslambenomenos* was the lowest pitch in the
-Greater Perfect System — the reference from which every interval was measured.
+A pendulum swings. A planet orbits. A galaxy rotates.
 
-This site presents a physical analogue: the cosmological constant $\\Lambda$ sets a
-fundamental oscillation frequency, and the MOND acceleration scale, the Hubble rate,
-and the galactic synchronization threshold are all overtones of this single reference.
+At some point, these motions become so slow — so close to the expansion
+rate of the universe itself — that the distinction between "orbiting"
+and "drifting" breaks down. That threshold has a name in astronomy:
+the MOND acceleration scale, $a_0 \\approx 1.2 \\times 10^{-10}$ m/s$^2$.
 
-$$\\Lambda \\;\\xrightarrow{c\\sqrt{\\cdot/3}}\\; \\nu_\\Lambda \\;\\xrightarrow{\\div\\sqrt{\\Omega_\\Lambda}}\\; H_0 \\;\\xrightarrow{c/2\\pi}\\; a_0$$
+Below this acceleration, galaxies stop behaving the way Newton predicts.
+Rotation curves flatten. The missing-mass problem appears. This has been
+known since the 1980s. What hasn't been settled is *why that particular number*.
 
-Three constants. One frequency. Zero free parameters.
+In ancient Greek music theory, the *proslambenomenos* was the lowest tone in
+the Greater Perfect System — the reference pitch from which every interval
+was measured. It turns out there's a physical analogue.
 
-## Reading order
+The cosmological constant $\\Lambda$ sets a frequency. The Hubble rate $H_0$
+is an overtone. And the MOND scale is the next one down:
 
-1. **Proslambenomenos** — derives $a_0$ from $\\Lambda$ via Kuramoto critical coupling,
-   proves uniqueness via Lyapunov dissipation, derives Renzo's Rule from self-consistency
-2. **201** — the unifying framework: gravity as synchronization in a frictional medium,
-   SPARC-X numerical verification on 175 galaxies
-3. **Intersections** — the physical mechanism: stick-slip dynamics, Lagrangian relaxation,
-   QCD parallels, Feigenbaum universality
-4. **Harmonics** — the synchronization cost framework: mode-locking substrate, Born rule
-   from basin geometry, $a_0$ as cost equality, spectral tilt, Planck scale thresholds
+$$\\Lambda \\;\\xrightarrow{c\\sqrt{\\cdot/3}}\\; \\nu_\\Lambda
+  \\;\\xrightarrow{\\div\\sqrt{\\Omega_\\Lambda}}\\; H_0
+  \\;\\xrightarrow{c/2\\pi}\\; a_0$$
 
-## Source repositories
+No free parameters. The predicted value is $1.04 \\times 10^{-10}$ m/s$^2$.
+The measured value is $1.2 \\times 10^{-10}$ m/s$^2$. The ratio is 1.15 —
+within the range set by the shape of the galactic frequency distribution.
+
+This site presents the derivation, the numerical evidence across 175
+galaxies, and the physical mechanism — oscillators synchronizing through
+friction, the same dynamics that make a violin string sing or a
+geological fault slip.
+
+## Where to start
+
+- **The short version**: [Proslambenomenos](proslambenomenos/proslambenomenos.html) —
+  the derivation in one document
+- **The numbers**: [201](201/joven_unifying_framework.html) —
+  175 SPARC-X galaxies, predicted vs. observed rotation curves
+- **The mechanism**: [Intersections](intersections/joven_stick_slip_dark_matter.html) —
+  stick-slip dynamics, why synchronization produces flat rotation curves
+- **The full framework**: [Harmonics](harmonics/sync_cost/FRAMEWORK.html) —
+  14 derivations, from counting to Einstein
+
+## Source
 
 - [proslambenomenos](https://github.com/nickjoven/proslambenomenos) — the self-contained preprint
 - [201](https://github.com/nickjoven/201) — the numerical framework
 - [intersections](https://github.com/nickjoven/intersections) — the physical substrate
 - [harmonics](https://github.com/nickjoven/harmonics) — the synchronization cost derivations
 
-All notebooks on this site are **executed during build** — outputs are computed,
-not pre-rendered. The source is the truth.
+All notebooks on this site are **executed during build** — you can verify
+every number yourself.
 """
     (BOOK_DIR / "intro.md").write_text(intro)
     print("  intro.md")
