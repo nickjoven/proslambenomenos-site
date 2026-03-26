@@ -428,6 +428,14 @@ def write_book_sources(sources: dict):
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_bytes(data)
 
+    # Copy local content files
+    content_dir = SITE_DIR / "content"
+    if content_dir.exists():
+        for f in content_dir.iterdir():
+            dest = BOOK_DIR / f.name
+            shutil.copy2(f, dest)
+            print(f"  {f.name} (local)")
+
 
 def generate_toc():
     """Generate _toc.yml for Jupyter Book."""
@@ -464,9 +472,20 @@ def generate_toc():
         for ch in part["chapters"]:
             lines.append(f"      - file: {ch['file']}")
 
+    # Local content
+    content_dir = SITE_DIR / "content"
+    if content_dir.exists():
+        local_files = sorted(content_dir.iterdir())
+        if local_files:
+            lines.append('  - caption: "Observatory"')
+            lines.append("    chapters:")
+            for f in local_files:
+                stem = f.stem
+                lines.append(f"      - file: {stem}")
+
     toc_path = BOOK_DIR / "_toc.yml"
     toc_path.write_text("\n".join(lines) + "\n")
-    print(f"  _toc.yml ({sum(len(p['chapters']) for p in toc['parts'])} chapters)")
+    print(f"  _toc.yml")
 
 
 def generate_config():
