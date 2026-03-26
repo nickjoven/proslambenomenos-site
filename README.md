@@ -36,4 +36,4 @@ proslambenomenos-site/
 - [proslambenomenos](https://github.com/nickjoven/proslambenomenos) — proslambenomenos frequency, Lyapunov uniqueness, Renzo's Rule (Kuramoto side)
 - [201](https://github.com/nickjoven/201) — main framework, sparc_x API, SPARC galaxies
 - [intersections](https://github.com/nickjoven/intersections) — stick-slip dynamics, Lagrangian relaxation, CVT
-- [harmonics](https://github.com/nickjoven/harmonics) — synchronization cost derivations (D1–D29), mode-locking substrate
+- [harmonics](https://github.com/nickjoven/harmonics) — synchronization cost derivations (D0–D29), mode-locking substrate

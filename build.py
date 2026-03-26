@@ -136,6 +136,12 @@ DATA_FILES = {
 # -- Derivation metadata for machine-readable graph and glossary -----------
 
 DERIVATIONS = {
+    0:  {"title": "Recurrence Survival", "status": "derived",
+         "claim": "The mediant rule applied to its own first output returns that output: "
+                  "F(2) = F(1) + F(0) = 1. The recurrence is a fixed point of itself at "
+                  "step zero, establishing that the rule survives self-application before "
+                  "the tree begins. D0 is D9 with an empty tree; D9 is D0 with a full tree.",
+         "depends": [29]},
     1:  {"title": "Born Rule", "status": "derived",
          "claim": "P = |psi|^2 from basin measure and tongue geometry",
          "depends": [10]},
@@ -162,8 +168,9 @@ DERIVATIONS = {
          "claim": "a_0(z) = cH(z)/(2*pi) tested against high-z surveys",
          "depends": [3, 9]},
     9:  {"title": "Fidelity Bound", "status": "derived",
-         "claim": "Self-referential fidelity bound unifying MOND and collapse",
-         "depends": [1, 7, 10, 11]},
+         "claim": "Self-referential fidelity bound unifying MOND and collapse. "
+                  "The mature fixed point: D9 is D0 with a full tree.",
+         "depends": [0, 1, 7, 10, 11]},
     10: {"title": "Minimum Alphabet", "status": "derived",
          "claim": "Four irreducible primitives: integers, mediant, fixed-point, parabola",
          "depends": [29]},
@@ -342,6 +349,12 @@ GLOSSARY = {
                       "tree. The self-consistency condition whose K=1 limit is Einstein "
                       "and K<1 limit is Schrodinger (D11).",
         "derivation": 11,
+    },
+    "recurrence survival": {
+        "definition": "D0: the mediant rule applied to its own first output returns that "
+                      "output. F(2) = F(1) + F(0) = 1. The rule survives self-application "
+                      "before the tree begins. D0 is D9 with an empty tree.",
+        "derivation": 0,
     },
     "Stribeck curve": {
         "definition": "The friction coefficient as a function of sliding velocity. "
@@ -592,7 +605,7 @@ geological fault slip.
 - **The mechanism**: [Intersections](intersections/joven_stick_slip_dark_matter.html) —
   stick-slip dynamics, why synchronization produces flat rotation curves
 - **The full framework**: [Harmonics](harmonics/sync_cost/FRAMEWORK.html) —
-  29 derivations, from counting to Einstein
+  30 derivations (D0–D29), from counting to Einstein
 
 ## Source
 
@@ -615,7 +628,7 @@ def generate_derivation_graph():
 
     graph = {
         "title": "Proslambenomenos Derivation Chain",
-        "description": "29 derivations from synchronization dynamics to general relativity and quantum mechanics",
+        "description": "30 derivations (D0-D29) from recurrence survival to general relativity and quantum mechanics",
         "author": "N. Joven",
         "license": "CC0 1.0",
         "derivation_count": len(DERIVATIONS),
