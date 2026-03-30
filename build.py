@@ -119,10 +119,48 @@ REPOS = {
             "sync_cost/derivations/27_exponent.md",
             "sync_cost/derivations/28_farey_proof.md",
             "sync_cost/derivations/29_mediant_derivation.md",
+            "sync_cost/derivations/30_denomination_boundary.md",
+            "sync_cost/derivations/31_speed_of_light.md",
+            "sync_cost/derivations/32_minkowski_signature.md",
+            "sync_cost/derivations/33_duty_cycle_dictionary.md",
+            "sync_cost/derivations/34_generation_mechanism.md",
+            "sync_cost/derivations/35_cosmological_cycle.md",
+            "sync_cost/derivations/36_conservation_computability.md",
+            "sync_cost/derivations/37_figure_eight.md",
+            "sync_cost/derivations/38_boundary_weight.md",
+            "sync_cost/derivations/duty_dimension_proof.md",
+            "sync_cost/derivations/isotropy_lemma.md",
+            "sync_cost/derivations/xor_derivation.md",
+            # Python scripts (needed for link resolution and execution)
+            "sync_cost/derivations/circle_map.py",
+            "sync_cost/derivations/born_rule_tongues.py",
+            "sync_cost/derivations/golden_ratio_pivot.py",
+            "sync_cost/derivations/stern_brocot_map.py",
+            "sync_cost/derivations/phi_squared_zoom.py",
+            "sync_cost/derivations/k_omega_mapping.py",
+            "sync_cost/derivations/field_equation_cmb.py",
+            "sync_cost/derivations/klein_bottle_kuramoto.py",
+            "sync_cost/derivations/alphabet_check.py",
+            "sync_cost/derivations/sigma_squared.py",
+            "sync_cost/derivations/alphabet_depth21.py",
         ],
         "order": 4,
         "title": "Harmonics",
         "subtitle": "Synchronization cost and the mode-locking substrate",
+    },
+    "stribeck-optics": {
+        "github": "nickjoven/stribeck-optics",
+        "files": [],
+        "order": 5,
+        "title": "Stribeck Optics",
+        "subtitle": "Optical friction and mode-locking in lenses",
+    },
+    "product": {
+        "github": "nickjoven/product",
+        "files": [],
+        "order": 6,
+        "title": "Product",
+        "subtitle": "Farey-partition engineering applications",
     },
 }
 
@@ -130,6 +168,13 @@ REPOS = {
 DATA_FILES = {
     "201": [
         "data/NGC2403_rotmod.dat",
+    ],
+    "proslambenomenos": [
+        "docs/img/phase_newtonian.png",
+        "docs/img/phase_boundary.png",
+        "docs/img/phase_deep_mond.png",
+        "docs/img/ngc2403_score.png",
+        "docs/img/oa_potential.png",
     ],
 }
 
@@ -383,6 +428,75 @@ GLOSSARY = {
     },
 }
 
+# -- Static assets to include (HTMLs, GIFs, PNGs, scripts) -------------------
+
+STATIC_ASSETS = {
+    "harmonics": {
+        "github": "nickjoven/harmonics",
+        "files": [
+            # GIF animations
+            "stairs.gif",
+            "triangles.gif",
+            "orbit.gif",
+            "spiral.gif",
+            "rose.gif",
+            # Interactive HTML apps
+            "sync_cost/applications/stern_brocot_walk.html",
+            "sync_cost/applications/ontology.html",
+            "sync_cost/applications/mobius_views.html",
+            "sync_cost/applications/mobius_projector.html",
+            "sync_cost/derivations/our_address.html",
+            # Key Python scripts (referenced in derivation docs)
+            "sync_cost/derivations/circle_map.py",
+            "sync_cost/derivations/born_rule_tongues.py",
+            "sync_cost/derivations/golden_ratio_pivot.py",
+            "sync_cost/derivations/stern_brocot_map.py",
+            "sync_cost/derivations/phi_squared_zoom.py",
+            "sync_cost/derivations/k_omega_mapping.py",
+            "sync_cost/derivations/field_equation_cmb.py",
+            "sync_cost/derivations/klein_bottle_kuramoto.py",
+            "sync_cost/derivations/alphabet_check.py",
+            "sync_cost/derivations/sigma_squared.py",
+            "sync_cost/derivations/alphabet_depth21.py",
+        ],
+    },
+    "proslambenomenos": {
+        "github": "nickjoven/proslambenomenos",
+        "files": [
+            "docs/img/phase_newtonian.png",
+            "docs/img/phase_boundary.png",
+            "docs/img/phase_deep_mond.png",
+            "docs/img/ngc2403_score.png",
+            "docs/img/oa_potential.png",
+        ],
+    },
+    "stribeck-optics": {
+        "github": "nickjoven/stribeck-optics",
+        "files": [
+            "docs/index.html",
+            "stribeck_optics_results.png",
+        ],
+    },
+    "product": {
+        "github": "nickjoven/product",
+        "files": [
+            "farey-heat-sinks.html",
+            "farey-integral-suppression.html",
+            "farey-muzzle-devices.html",
+            "farey-pc-cooling.html",
+        ],
+    },
+}
+
+# Mapping from repo name to GitHub base URL for script link resolution
+REPO_GITHUB_URLS = {
+    "harmonics": "https://github.com/nickjoven/harmonics/blob/main",
+    "proslambenomenos": "https://github.com/nickjoven/proslambenomenos/blob/main",
+    "201": "https://github.com/nickjoven/201/blob/main",
+    "intersections": "https://github.com/nickjoven/intersections/blob/main",
+    "rfe": "https://github.com/nickjoven/rfe/blob/main",
+}
+
 
 def fetch_file_github(repo_slug: str, path: str) -> bytes:
     """Fetch a file from GitHub raw content."""
@@ -430,6 +544,38 @@ def fetch_sources(local_root: Path | None = None) -> dict:
     return result
 
 
+def fetch_static_assets(local_root: Path | None = None) -> dict:
+    """Fetch static assets (HTML, GIF, PNG). Returns {repo: {path: bytes}}."""
+    result = {}
+    for name, cfg in STATIC_ASSETS.items():
+        result[name] = {}
+        slug = cfg["github"]
+        for path in cfg["files"]:
+            try:
+                if local_root:
+                    data = fetch_file_local(local_root, name, path)
+                else:
+                    data = fetch_file_github(slug, path)
+                result[name][path] = data
+                print(f"  {name}/{path} (static)")
+            except (FileNotFoundError, URLError, OSError) as e:
+                print(f"  {name}/{path} — MISSING ({e})")
+    return result
+
+
+def copy_static_assets(static_sources: dict):
+    """Copy fetched static assets into book/_static/."""
+    static_dir = BOOK_DIR / "_static"
+    static_dir.mkdir(parents=True, exist_ok=True)
+    for repo, files in static_sources.items():
+        for path, data in files.items():
+            # Flatten into _static/ using just the filename
+            filename = Path(path).name
+            dest = static_dir / filename
+            dest.write_bytes(data)
+            print(f"  _static/{filename}")
+
+
 def write_book_sources(sources: dict):
     """Write fetched sources into the Jupyter Book directory structure."""
     if BOOK_DIR.exists():
@@ -448,6 +594,159 @@ def write_book_sources(sources: dict):
             dest = BOOK_DIR / f.name
             shutil.copy2(f, dest)
             print(f"  {f.name} (local)")
+
+
+def resolve_script_references():
+    """Rewrite .py script references and internal .md cross-references in book markdown.
+
+    After write_book_sources() copies raw files into the book directory, local
+    references like `born_rule_tongues.py` or `[text](PROOF_A_gravity.md)` break
+    because those files aren't in the book.  This pass converts them to GitHub
+    links or corrected relative paths.
+    """
+    import re
+
+    # --- GitHub URL mappings keyed by book subdirectory prefix ---
+    SCRIPT_MAPS = [
+        ("harmonics/sync_cost/derivations/",
+         "https://github.com/nickjoven/harmonics/blob/main/sync_cost/derivations/"),
+        ("harmonics/seed/src/",
+         "https://github.com/nickjoven/harmonics/blob/main/seed/src/"),
+        ("harmonics/",
+         "https://github.com/nickjoven/harmonics/blob/main/"),
+        ("201/",
+         "https://github.com/nickjoven/201/blob/main/"),
+        ("intersections/",
+         "https://github.com/nickjoven/intersections/blob/main/"),
+        ("proslambenomenos/",
+         "https://github.com/nickjoven/proslambenomenos/blob/main/"),
+    ]
+
+    def _github_url_for(book_rel_path, script_name):
+        """Given a file's path relative to BOOK_DIR, return the GitHub URL for a script."""
+        for prefix, base_url in SCRIPT_MAPS:
+            if book_rel_path.startswith(prefix):
+                return base_url + script_name
+        return None
+
+    # Build a lookup: filename -> book-relative path for all .md files in the book
+    md_index = {}
+    for md_path in BOOK_DIR.rglob("*.md"):
+        rel = md_path.relative_to(BOOK_DIR).as_posix()
+        md_index.setdefault(md_path.name, []).append(rel)
+
+    def _resolve_md_ref(book_rel_path, target):
+        """Resolve a .md reference to a correct relative path within the book."""
+        target_name = Path(target).name
+        candidates = md_index.get(target_name, [])
+        if not candidates:
+            return None
+        current_dir = str(Path(book_rel_path).parent)
+        # Same directory? Already correct as a bare filename.
+        for c in candidates:
+            if str(Path(c).parent) == current_dir:
+                return target_name
+        # Otherwise compute relative path from the file's directory
+        from_dir = Path(book_rel_path).parent
+        best = Path(candidates[0])
+        return os.path.relpath(best, from_dir)
+
+    count_scripts = 0
+    count_md_refs = 0
+
+    for md_file in BOOK_DIR.rglob("*.md"):
+        book_rel = md_file.relative_to(BOOK_DIR).as_posix()
+        text = md_file.read_text(encoding="utf-8", errors="replace")
+        original = text
+
+        # 1) Fix markdown links to .py files: [text](script.py) -> [text](github_url)
+        def _replace_link_py(m):
+            nonlocal count_scripts
+            full_match = m.group(0)
+            link_text = m.group(1)
+            script = m.group(2)
+            if script.startswith(("http://", "https://")):
+                return full_match
+            url = _github_url_for(book_rel, script)
+            if url:
+                count_scripts += 1
+                return f"[{link_text}]({url})"
+            return full_match
+
+        text = re.sub(r'\[([^\]]*)\]\(([^)]*\.py)\)', _replace_link_py, text)
+
+        # 2) Fix backtick-wrapped .py references: `script.py` -> [`script.py`](github_url)
+        #    Skip if already inside a markdown link [...](...) structure
+        def _replace_backtick_py(m):
+            nonlocal count_scripts
+            prefix = m.group(1)
+            script = m.group(2)
+            if prefix.endswith("](") or prefix.endswith("["):
+                return m.group(0)
+            url = _github_url_for(book_rel, script)
+            if url:
+                count_scripts += 1
+                return f"{prefix}[`{script}`]({url})"
+            return m.group(0)
+
+        text = re.sub(r'(^|[^[\](])`([a-zA-Z_]\w*\.py)`', _replace_backtick_py, text,
+                       flags=re.MULTILINE)
+
+        # 3) Fix internal .md cross-references: [text](file.md) -> corrected relative path
+        #    Only fix bare filenames or simple relative refs, not URLs
+        def _replace_link_md(m):
+            nonlocal count_md_refs
+            full_match = m.group(0)
+            link_text = m.group(1)
+            target = m.group(2)
+            if target.startswith(("http://", "https://")):
+                return full_match
+            target_name = Path(target).name
+            if not target_name.endswith(".md"):
+                return full_match
+            resolved = _resolve_md_ref(book_rel, target)
+            if resolved and resolved != target:
+                count_md_refs += 1
+                return f"[{link_text}]({resolved})"
+            return full_match
+
+        text = re.sub(r'\[([^\]]*)\]\(([^)]*\.md)\)', _replace_link_md, text)
+
+        if text != original:
+            md_file.write_text(text, encoding="utf-8")
+
+    print(f"  Resolved {count_scripts} script references, {count_md_refs} internal .md cross-references")
+
+
+def fetch_static_assets(local_root: Path | None = None) -> dict:
+    """Fetch static assets (GIFs, HTMLs, PNGs, scripts). Returns {repo: {path: bytes}}."""
+    result = {}
+    for name, cfg in STATIC_ASSETS.items():
+        result[name] = {}
+        slug = cfg["github"]
+        for path in cfg["files"]:
+            try:
+                if local_root:
+                    data = fetch_file_local(local_root, name, path)
+                else:
+                    data = fetch_file_github(slug, path)
+                result[name][path] = data
+                print(f"  {name}/{path} (static)")
+            except (FileNotFoundError, URLError, OSError) as e:
+                print(f"  {name}/{path} — MISSING ({e})")
+    return result
+
+
+def copy_static_assets(static_sources: dict):
+    """Copy fetched static assets into book/_static/assets/."""
+    static_dir = BOOK_DIR / "_static" / "assets"
+    static_dir.mkdir(parents=True, exist_ok=True)
+    for repo, files in static_sources.items():
+        for path, data in files.items():
+            filename = Path(path).name
+            dest = static_dir / filename
+            dest.write_bytes(data)
+            print(f"  _static/assets/{filename}")
 
 
 def _sidebar_title(file_key: str) -> str | None:
@@ -493,6 +792,17 @@ def generate_glossary_page():
     print("  glossary.md")
 
 
+def generate_graph_page():
+    """Generate the derivation graph page from submediant source."""
+    graph_source = SITE_DIR.parent / "submediant" / "book" / "graph.md"
+    if graph_source.exists():
+        content = graph_source.read_text()
+    else:
+        content = "# Derivation Graph\n\nGraph not available — build from submediant source.\n"
+    (BOOK_DIR / "graph.md").write_text(content)
+    print("  graph.md")
+
+
 def generate_toc():
     """Generate _toc.yml for Jupyter Book."""
     toc = {
@@ -511,10 +821,11 @@ def generate_toc():
         for f in nb_files:
             chapters.append({"file": f"{name}/{f.removesuffix('.ipynb')}"})
 
-        toc["parts"].append({
-            "caption": cfg["title"],
-            "chapters": chapters,
-        })
+        if chapters:
+            toc["parts"].append({
+                "caption": cfg["title"],
+                "chapters": chapters,
+            })
 
     # Write as YAML manually (avoid pyyaml dependency)
     lines = [
@@ -543,9 +854,11 @@ def generate_toc():
                 stem = f.stem
                 lines.append(f"      - file: {stem}")
 
-    # Reference section with glossary page
+    # Reference section with graph and glossary
     lines.append('  - caption: "Reference"')
     lines.append("    chapters:")
+    lines.append('      - file: graph')
+    lines.append('        title: "Derivation Graph"')
     lines.append("      - file: glossary")
 
     toc_path = BOOK_DIR / "_toc.yml"
@@ -983,15 +1296,27 @@ def main():
     print("Fetching sources...")
     sources = fetch_sources(local_root)
 
+    print("\nFetching static assets...")
+    static_sources = fetch_static_assets(local_root)
+
     if args.check_only:
         total = sum(len(f) for f in sources.values())
         expected = sum(len(c["files"]) for c in REPOS.values()) + sum(
             len(v) for v in DATA_FILES.values())
-        print(f"\n{total}/{expected} files reachable.")
-        return 0 if total == expected else 1
+        static_total = sum(len(f) for f in static_sources.values())
+        static_expected = sum(len(c["files"]) for c in STATIC_ASSETS.values())
+        print(f"\n{total}/{expected} source files reachable.")
+        print(f"{static_total}/{static_expected} static assets reachable.")
+        return 0 if total == expected and static_total == static_expected else 1
 
     print("\nWriting book sources...")
     write_book_sources(sources)
+
+    print("\nCopying static assets...")
+    copy_static_assets(static_sources)
+
+    print("\nResolving script references and cross-links...")
+    resolve_script_references()
 
     print("\nGenerating Jupyter Book config...")
     generate_config()
@@ -1002,6 +1327,7 @@ def main():
     generate_derivation_graph()
     generate_glossary()
     generate_glossary_page()
+    generate_graph_page()
 
     # Write manifest
     manifest = generate_manifest(sources)
