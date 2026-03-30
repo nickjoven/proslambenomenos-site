@@ -893,7 +893,7 @@ html:
   extra_css:
     - _static/custom.css
     - _static/glossary.css
-    - _static/mobius-theme.css
+    - https://nickjoven.github.io/submediant-site/_static/mobius-theme.css
 
 sphinx:
   config:
@@ -904,7 +904,7 @@ sphinx:
           "NN": "\\\\mathbb{N}"
     html_js_files:
       - glossary.js
-      - mobius-theme.js
+      - https://nickjoven.github.io/submediant-site/_static/mobius-theme.js
     html_theme_options:
       navigation_with_keys: false
 """
@@ -921,13 +921,7 @@ sphinx:
 }
 """)
 
-    # Copy Mobius theme files from submediant canonical source
-    mobius_source = SITE_DIR.parent / "submediant" / "book" / "_static"
-    for fname in ["mobius-theme.css", "mobius-theme.js"]:
-        src = mobius_source / fname
-        if src.exists():
-            shutil.copy2(src, static_dir / fname)
-            print(f"  {fname}")
+    # Mobius theme loaded from submediant-site canonical URL (no local copy)
 
     print("  _config.yml")
 
