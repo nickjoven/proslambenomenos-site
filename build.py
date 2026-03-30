@@ -894,7 +894,6 @@ html:
   extra_css:
     - _static/custom.css
     - _static/glossary.css
-    - https://nickjoven.github.io/submediant-site/_static/mobius-theme.css
 
 sphinx:
   config:
@@ -903,6 +902,8 @@ sphinx:
         macros:
           "RR": "\\\\mathbb{R}"
           "NN": "\\\\mathbb{N}"
+    html_css_files:
+      - https://nickjoven.github.io/submediant-site/_static/mobius-theme.css
     html_js_files:
       - glossary.js
       - https://nickjoven.github.io/submediant-site/_static/mobius-theme.js
