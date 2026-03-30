@@ -772,38 +772,58 @@ def _sidebar_title(file_key: str) -> str | None:
 
 
 def generate_glossary_page():
-    """Generate a standalone glossary.md page from the GLOSSARY dict."""
-    lines = [
-        "# Glossary",
-        "",
-        "Terms are defined in the context of the synchronization framework.",
-        "",
-        "---",
-        "",
-    ]
+    """Generate glossary.md — copy from submediant canonical if available, else generate."""
+    # Prefer submediant canonical glossary (with semantic categories)
+    ref_source = SITE_DIR.parent / "submediant" / "reference" / "glossary.md"
+    if ref_source.exists():
+        (BOOK_DIR / "glossary.md").write_text(ref_source.read_text())
+        print("  glossary.md (local)")
+        return
+
+    # Fallback: fetch from GitHub
+    url = "https://raw.githubusercontent.com/nickjoven/submediant-site/main/reference/glossary.md"
+    try:
+        content = urlopen(Request(url), timeout=15).read().decode("utf-8")
+        (BOOK_DIR / "glossary.md").write_text(content)
+        print("  glossary.md (github)")
+        return
+    except (URLError, OSError):
+        pass
+
+    # Last resort: generate from GLOSSARY dict
+    lines = ["# Glossary", "", "Terms defined in the context of the synchronization framework.", "", "---", ""]
     for term in sorted(GLOSSARY.keys(), key=str.lower):
         entry = GLOSSARY[term]
-        defn = entry["definition"]
-        lines.append(f"{term}")
-        lines.append(f": {defn}")
+        lines.append(f"**{term}**")
+        lines.append(f": {entry['definition']}")
         lines.append("")
-    path = BOOK_DIR / "glossary.md"
-    path.write_text("\n".join(lines))
-    print("  glossary.md")
+    (BOOK_DIR / "glossary.md").write_text("\n".join(lines))
+    print("  glossary.md (generated)")
 
 
 def generate_reference_pages():
-    """Copy reference pages (graph, equations, visuals, glossary) from submediant."""
+    """Copy reference pages from submediant — local first, then GitHub."""
     ref_source = SITE_DIR.parent / "submediant" / "reference"
     for fname in ["graph.md", "equations.md", "visuals.md"]:
+        content = None
+        # Try local sibling first
         src = ref_source / fname if ref_source.exists() else None
         if src and src.exists():
-            (BOOK_DIR / fname).write_text(src.read_text())
-            print(f"  {fname}")
+            content = src.read_text()
+            print(f"  {fname} (local)")
         else:
-            # Fallback stub
+            # Fetch from GitHub raw
+            url = f"https://raw.githubusercontent.com/nickjoven/submediant-site/main/reference/{fname}"
+            try:
+                content = urlopen(Request(url), timeout=15).read().decode("utf-8")
+                print(f"  {fname} (github)")
+            except (URLError, OSError) as e:
+                print(f"  {fname} — FAILED ({e})")
+        if content:
+            (BOOK_DIR / fname).write_text(content)
+        else:
             title = fname.replace(".md", "").replace("_", " ").title()
-            (BOOK_DIR / fname).write_text(f"# {title}\n\nNot available — build from submediant source.\n")
+            (BOOK_DIR / fname).write_text(f"# {title}\n\nReference page not available.\n")
             print(f"  {fname} (stub)")
 
 
