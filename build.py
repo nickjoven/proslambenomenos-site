@@ -450,6 +450,49 @@ def write_book_sources(sources: dict):
             print(f"  {f.name} (local)")
 
 
+def _sidebar_title(file_key: str) -> str | None:
+    """Return a clean sidebar title if the filename has a numeric prefix.
+
+    Strips leading 'NN_' from the basename and converts to title case.
+    Returns None if no cleanup is needed (no numeric prefix).
+    """
+    import re
+    basename = file_key.rsplit("/", 1)[-1]
+    m = re.match(r"^\d+_(.+)$", basename)
+    if not m:
+        return None
+    clean = m.group(1).replace("_", " ").title()
+    # Fix common acronyms/terms that title-case mangles
+    fixes = {
+        "Sparc": "SPARC", "Cmb": "CMB", "Qcd": "QCD", "Uv": "UV",
+        "A0": "a₀", "Born": "Born", "Mond": "MOND",
+    }
+    for wrong, right in fixes.items():
+        clean = clean.replace(wrong, right)
+    return clean
+
+
+def generate_glossary_page():
+    """Generate a standalone glossary.md page from the GLOSSARY dict."""
+    lines = [
+        "# Glossary",
+        "",
+        "Terms are defined in the context of the synchronization framework.",
+        "",
+        "---",
+        "",
+    ]
+    for term in sorted(GLOSSARY.keys(), key=str.lower):
+        entry = GLOSSARY[term]
+        defn = entry["definition"]
+        lines.append(f"{term}")
+        lines.append(f": {defn}")
+        lines.append("")
+    path = BOOK_DIR / "glossary.md"
+    path.write_text("\n".join(lines))
+    print("  glossary.md")
+
+
 def generate_toc():
     """Generate _toc.yml for Jupyter Book."""
     toc = {
@@ -483,7 +526,11 @@ def generate_toc():
         lines.append(f"  - caption: \"{part['caption']}\"")
         lines.append("    chapters:")
         for ch in part["chapters"]:
-            lines.append(f"      - file: {ch['file']}")
+            file_key = ch["file"]
+            lines.append(f"      - file: {file_key}")
+            title = _sidebar_title(file_key)
+            if title:
+                lines.append(f"        title: \"{title}\"")
 
     # Local content
     content_dir = SITE_DIR / "content"
@@ -495,6 +542,11 @@ def generate_toc():
             for f in local_files:
                 stem = f.stem
                 lines.append(f"      - file: {stem}")
+
+    # Reference section with glossary page
+    lines.append('  - caption: "Reference"')
+    lines.append("    chapters:")
+    lines.append("      - file: glossary")
 
     toc_path = BOOK_DIR / "_toc.yml"
     toc_path.write_text("\n".join(lines) + "\n")
@@ -561,7 +613,7 @@ def generate_intro():
     intro = """\
 # Proslambenomenos
 
-N. Joven — 2026 — [ORCID 0009-0008-0679-0812](https://orcid.org/0009-0008-0679-0812) — CC0 1.0
+[N. Joven](https://github.com/nickjoven) — 2026 — [ORCID 0009-0008-0679-0812](https://orcid.org/0009-0008-0679-0812) — CC0 1.0
 
 ---
 
@@ -949,6 +1001,7 @@ def main():
     print("\nGenerating machine-readable metadata...")
     generate_derivation_graph()
     generate_glossary()
+    generate_glossary_page()
 
     # Write manifest
     manifest = generate_manifest(sources)
