@@ -999,6 +999,8 @@ geological fault slip.
   stick-slip dynamics, why synchronization produces flat rotation curves
 - **The full framework**: [Harmonics](harmonics/sync_cost/FRAMEWORK.html) —
   30 derivations (D0–D29), from counting to Einstein
+- **Where are we?** [Our Address](https://nickjoven.github.io/submediant-site/_static/our_address.html) —
+  the universe's computational clock on the Stern-Brocot tree
 
 ## Source
 
