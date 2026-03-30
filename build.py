@@ -792,15 +792,19 @@ def generate_glossary_page():
     print("  glossary.md")
 
 
-def generate_graph_page():
-    """Generate the derivation graph page from submediant source."""
-    graph_source = SITE_DIR.parent / "submediant" / "book" / "graph.md"
-    if graph_source.exists():
-        content = graph_source.read_text()
-    else:
-        content = "# Derivation Graph\n\nGraph not available — build from submediant source.\n"
-    (BOOK_DIR / "graph.md").write_text(content)
-    print("  graph.md")
+def generate_reference_pages():
+    """Copy reference pages (graph, equations, visuals, glossary) from submediant."""
+    ref_source = SITE_DIR.parent / "submediant" / "reference"
+    for fname in ["graph.md", "equations.md", "visuals.md"]:
+        src = ref_source / fname if ref_source.exists() else None
+        if src and src.exists():
+            (BOOK_DIR / fname).write_text(src.read_text())
+            print(f"  {fname}")
+        else:
+            # Fallback stub
+            title = fname.replace(".md", "").replace("_", " ").title()
+            (BOOK_DIR / fname).write_text(f"# {title}\n\nNot available — build from submediant source.\n")
+            print(f"  {fname} (stub)")
 
 
 def generate_toc():
@@ -855,11 +859,15 @@ def generate_toc():
             for f in local_files:
                 lines.append(f"      - file: {f.stem}")
 
-    # Reference: graph + glossary adjacent
+    # Reference: graph, equations, visuals, glossary
     lines.append('  - caption: "Reference"')
     lines.append("    chapters:")
     lines.append('      - file: graph')
     lines.append('        title: "Derivation Graph"')
+    lines.append('      - file: equations')
+    lines.append('        title: "Key Equations"')
+    lines.append('      - file: visuals')
+    lines.append('        title: "Visual Assets"')
     lines.append("      - file: glossary")
 
     toc_path = BOOK_DIR / "_toc.yml"
@@ -884,7 +892,7 @@ launch_buttons:
   notebook_interface: classic
 
 repository:
-  url: https://github.com/nickjoven/proslambenomenos-site
+  url: https://github.com/nickjoven/proslambenomenos
 
 html:
   use_issues_button: false
@@ -912,6 +920,10 @@ sphinx:
       collapse_navigation: true
       show_nav_level: 1
       navigation_depth: 2
+      icon_links:
+        - name: GitHub
+          url: https://github.com/nickjoven
+          icon: fa-brands fa-github
 """
     (BOOK_DIR / "_config.yml").write_text(config)
 
@@ -937,6 +949,8 @@ def generate_intro():
 # Proslambenomenos
 
 [N. Joven](https://github.com/nickjoven) — 2026 — [ORCID 0009-0008-0679-0812](https://orcid.org/0009-0008-0679-0812) — CC0 1.0
+
+Source: [proslambenomenos](https://github.com/nickjoven/proslambenomenos) | [harmonics](https://github.com/nickjoven/harmonics) | [201](https://github.com/nickjoven/201) | [intersections](https://github.com/nickjoven/intersections)
 
 ---
 
@@ -1337,7 +1351,7 @@ def main():
     generate_derivation_graph()
     generate_glossary()
     generate_glossary_page()
-    generate_graph_page()
+    generate_reference_pages()
 
     # Write manifest
     manifest = generate_manifest(sources)
