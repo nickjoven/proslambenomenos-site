@@ -804,46 +804,48 @@ def generate_graph_page():
 
 
 def generate_toc():
-    """Generate _toc.yml for Jupyter Book."""
-    toc = {
-        "format": "jb-book",
-        "root": "intro",
-        "parts": [],
-    }
+    """Generate _toc.yml for Jupyter Book.
 
-    for name, cfg in sorted(REPOS.items(), key=lambda x: x[1]["order"]):
-        chapters = []
-        md_files = [f for f in cfg["files"] if f.endswith(".md")]
-        nb_files = [f for f in cfg["files"] if f.endswith(".ipynb")]
-
-        for f in md_files:
-            chapters.append({"file": f"{name}/{f.removesuffix('.md')}"})
-        for f in nb_files:
-            chapters.append({"file": f"{name}/{f.removesuffix('.ipynb')}"})
-
-        if chapters:
-            toc["parts"].append({
-                "caption": cfg["title"],
-                "chapters": chapters,
-            })
-
-    # Write as YAML manually (avoid pyyaml dependency)
+    Sidebar rule: ≤8 items visible at any level. First file in each repo
+    is the top-level chapter; rest nest as sections (collapsed by default).
+    """
     lines = [
         "format: jb-book",
         "root: intro",
         "parts:",
     ]
-    for part in toc["parts"]:
-        lines.append(f"  - caption: \"{part['caption']}\"")
-        lines.append("    chapters:")
-        for ch in part["chapters"]:
-            file_key = ch["file"]
-            lines.append(f"      - file: {file_key}")
-            title = _sidebar_title(file_key)
-            if title:
-                lines.append(f"        title: \"{title}\"")
 
-    # Local content
+    for name, cfg in sorted(REPOS.items(), key=lambda x: x[1]["order"]):
+        all_files = []
+        for f in cfg["files"]:
+            if f.endswith(".md"):
+                all_files.append(f"{name}/{f.removesuffix('.md')}")
+            elif f.endswith(".ipynb"):
+                all_files.append(f"{name}/{f.removesuffix('.ipynb')}")
+
+        if not all_files:
+            continue
+
+        lines.append(f"  - caption: \"{cfg['title']}\"")
+        lines.append("    chapters:")
+
+        # First file is the entry point (visible in sidebar)
+        entry = all_files[0]
+        lines.append(f"      - file: {entry}")
+        title = _sidebar_title(entry)
+        if title:
+            lines.append(f"        title: \"{title}\"")
+
+        # Rest nest as sections under the entry (collapsed)
+        if len(all_files) > 1:
+            lines.append("        sections:")
+            for f in all_files[1:]:
+                lines.append(f"          - file: {f}")
+                t = _sidebar_title(f)
+                if t:
+                    lines.append(f"            title: \"{t}\"")
+
+    # Local content (Observatory)
     content_dir = SITE_DIR / "content"
     if content_dir.exists():
         local_files = sorted(content_dir.iterdir())
@@ -851,10 +853,9 @@ def generate_toc():
             lines.append('  - caption: "Observatory"')
             lines.append("    chapters:")
             for f in local_files:
-                stem = f.stem
-                lines.append(f"      - file: {stem}")
+                lines.append(f"      - file: {f.stem}")
 
-    # Reference section with graph and glossary
+    # Reference: graph + glossary adjacent
     lines.append('  - caption: "Reference"')
     lines.append("    chapters:")
     lines.append('      - file: graph')
@@ -907,6 +908,9 @@ sphinx:
       - https://nickjoven.github.io/submediant-site/_static/mobius-theme.js
     html_theme_options:
       navigation_with_keys: false
+      collapse_navigation: true
+      show_nav_level: 1
+      navigation_depth: 2
 """
     (BOOK_DIR / "_config.yml").write_text(config)
 
