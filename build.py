@@ -155,13 +155,6 @@ REPOS = {
         "title": "Stribeck Optics",
         "subtitle": "Optical friction and mode-locking in lenses",
     },
-    "product": {
-        "github": "nickjoven/product",
-        "files": [],
-        "order": 6,
-        "title": "Product",
-        "subtitle": "Farey-partition engineering applications",
-    },
 }
 
 # Extra data files needed for notebook execution
@@ -475,15 +468,6 @@ STATIC_ASSETS = {
         "files": [
             "docs/index.html",
             "stribeck_optics_results.png",
-        ],
-    },
-    "product": {
-        "github": "nickjoven/product",
-        "files": [
-            "farey-heat-sinks.html",
-            "farey-integral-suppression.html",
-            "farey-muzzle-devices.html",
-            "farey-pc-cooling.html",
         ],
     },
 }
