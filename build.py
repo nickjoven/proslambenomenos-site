@@ -935,6 +935,12 @@ sphinx:
     static_dir = BOOK_DIR / "_static"
     static_dir.mkdir(exist_ok=True)
     (static_dir / "custom.css").write_text("""\
+/* Prevent mobile browsers from resizing text on scroll (address-bar collapse) */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 /* Accent colors matching the walkthrough pages */
 :root {
   --pst-color-primary: #58a6ff;
