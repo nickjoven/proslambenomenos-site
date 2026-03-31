@@ -904,7 +904,6 @@ html:
   use_edit_page_button: false
   favicon: ""
   extra_css:
-    - _static/custom.css
     - _static/glossary.css
 
 sphinx:
@@ -916,6 +915,7 @@ sphinx:
           "NN": "\\\\mathbb{N}"
     html_css_files:
       - https://nickjoven.github.io/submediant-site/_static/mobius-theme.css
+      - _static/custom.css
     html_js_files:
       - glossary.js
       - https://nickjoven.github.io/submediant-site/_static/mobius-theme.js
@@ -941,16 +941,10 @@ sphinx:
   --pst-color-secondary: #7ee787;
 }
 
-/* Prevent horizontal scroll on all viewports */
-html, body {
-  overflow-x: hidden;
-}
-
 /* Scrollable math blocks on narrow screens */
 @media screen and (max-width: 992px) {
-  mjx-container, .math {
+  mjx-container {
     overflow-x: auto;
-    max-width: calc(100vw - 2rem);
     display: block;
   }
 }
@@ -960,9 +954,6 @@ html, body {
   .bd-main .bd-content .bd-article-container {
     padding-left: 0.75rem;
     padding-right: 0.75rem;
-  }
-  .bd-main .bd-content .bd-article-container .bd-article {
-    max-width: 100%;
   }
 }
 
@@ -976,14 +967,12 @@ html, body {
     max-width: min(65ch, 100%);
     margin: 0 auto;
   }
-  /* Hide sidebar in landscape to maximize reading area */
   .bd-sidebar-primary {
     display: none !important;
   }
   .bd-header .navbar-header-items {
     display: flex !important;
   }
-  /* Reposition glossary toggle to avoid thumb zone conflict */
   #glossary-toggle {
     bottom: 8px;
     right: 8px;
