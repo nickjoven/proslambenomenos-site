@@ -1001,6 +1001,10 @@ geological fault slip.
   30 derivations (D0–D29), from counting to Einstein
 - **Where are we?** [Our Address](https://nickjoven.github.io/submediant-site/our_address.html) —
   the universe's computational clock on the Stern-Brocot tree
+- **From scratch?** [First Principles](https://nickjoven.github.io/submediant-site/first-principles.html) —
+  sin(\u03c9t) to Einstein in 10 steps
+- **The math?** [Oscillations](https://nickjoven.github.io/submediant-site/oscillations.html) —
+  47 oscillations, pure math of 1/\u03c6
 
 ## Source
 
