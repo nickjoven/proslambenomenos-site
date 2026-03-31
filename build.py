@@ -940,6 +940,51 @@ sphinx:
   --pst-color-primary: #58a6ff;
   --pst-color-secondary: #7ee787;
 }
+
+/* Mobile orientation handling */
+@media screen and (max-width: 768px) and (orientation: portrait) {
+  .bd-main .bd-content .bd-article-container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  .bd-main .bd-content .bd-article-container .bd-article {
+    max-width: 100%;
+  }
+  .math, mjx-container {
+    overflow-x: auto;
+    max-width: 100%;
+    font-size: 0.95em;
+  }
+}
+
+@media screen and (max-width: 992px) and (orientation: landscape) {
+  .bd-main .bd-content .bd-article-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+  .bd-main .bd-content .bd-article-container .bd-article {
+    max-width: 65ch;
+    margin: 0 auto;
+  }
+  /* Hide sidebar in landscape to maximize reading area */
+  .bd-sidebar-primary {
+    display: none !important;
+  }
+  .bd-header .navbar-header-items {
+    display: flex !important;
+  }
+  .math, mjx-container {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+  /* Reposition glossary toggle to avoid thumb zone conflict */
+  #glossary-toggle {
+    bottom: 8px;
+    right: 8px;
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+}
 """)
 
     # Mobius theme loaded from submediant-site canonical URL (no local copy)
