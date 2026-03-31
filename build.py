@@ -941,7 +941,21 @@ sphinx:
   --pst-color-secondary: #7ee787;
 }
 
-/* Mobile orientation handling */
+/* Prevent horizontal scroll on all viewports */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Scrollable math blocks on narrow screens */
+@media screen and (max-width: 992px) {
+  mjx-container, .math {
+    overflow-x: auto;
+    max-width: calc(100vw - 2rem);
+    display: block;
+  }
+}
+
+/* Mobile portrait */
 @media screen and (max-width: 768px) and (orientation: portrait) {
   .bd-main .bd-content .bd-article-container {
     padding-left: 0.75rem;
@@ -950,20 +964,16 @@ sphinx:
   .bd-main .bd-content .bd-article-container .bd-article {
     max-width: 100%;
   }
-  .math, mjx-container {
-    overflow-x: auto;
-    max-width: 100%;
-    font-size: 0.95em;
-  }
 }
 
+/* Mobile / tablet landscape */
 @media screen and (max-width: 992px) and (orientation: landscape) {
   .bd-main .bd-content .bd-article-container {
-    padding-left: 2rem;
-    padding-right: 2rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
   .bd-main .bd-content .bd-article-container .bd-article {
-    max-width: 65ch;
+    max-width: min(65ch, 100%);
     margin: 0 auto;
   }
   /* Hide sidebar in landscape to maximize reading area */
@@ -972,10 +982,6 @@ sphinx:
   }
   .bd-header .navbar-header-items {
     display: flex !important;
-  }
-  .math, mjx-container {
-    overflow-x: auto;
-    max-width: 100%;
   }
   /* Reposition glossary toggle to avoid thumb zone conflict */
   #glossary-toggle {
