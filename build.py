@@ -947,9 +947,9 @@ html {
   --pst-color-secondary: #7ee787;
 }
 
-/* Scrollable math blocks on narrow screens */
+/* Scrollable math blocks on narrow screens (display math only) */
 @media screen and (max-width: 992px) {
-  mjx-container {
+  mjx-container[display="true"] {
     overflow-x: auto;
     display: block;
   }
