@@ -702,6 +702,56 @@ def resolve_script_references():
     print(f"  Resolved {count_scripts} script references, {count_md_refs} internal .md cross-references")
 
 
+def resolve_doc_crossrefs():
+    """Rewrite Sphinx {doc} cross-references to plain markdown links.
+
+    Reference pages (equations.md etc.) fetched from submediant-site use
+    {doc}`category/filename` syntax that assumes a directory layout this
+    book doesn't have.  Convert them to relative markdown links pointing
+    at the actual book paths.
+    """
+    import re
+
+    # Build a lookup: bare filename (no extension) -> book-relative path
+    page_index = {}
+    for md_path in BOOK_DIR.rglob("*.md"):
+        rel = md_path.relative_to(BOOK_DIR).as_posix()
+        stem = md_path.stem
+        page_index.setdefault(stem, []).append(rel)
+
+    count = 0
+    for md_file in BOOK_DIR.glob("*.md"):  # reference pages live at book root
+        text = md_file.read_text(encoding="utf-8", errors="replace")
+        original = text
+
+        def _replace_doc_ref(m):
+            nonlocal count
+            ref_path = m.group(1)
+            # Extract the filename stem (last component, no extension)
+            stem = ref_path.rsplit("/", 1)[-1]
+            candidates = page_index.get(stem, [])
+            if candidates:
+                target = candidates[0]
+                count += 1
+                return f"[{stem}]({target})"
+            # If not found, try proslambenomenos repo mapping
+            if stem == "proslambenomenos":
+                candidates = page_index.get("proslambenomenos", [])
+                if candidates:
+                    target = candidates[0]
+                    count += 1
+                    return f"[{stem}]({target})"
+            # Convert to plain text to avoid Sphinx build errors
+            return stem.replace("_", " ").title()
+
+        text = re.sub(r'\{doc\}`([^`]+)`', _replace_doc_ref, text)
+
+        if text != original:
+            md_file.write_text(text, encoding="utf-8")
+
+    print(f"  Resolved {count} {{doc}} cross-references in reference pages")
+
+
 def fetch_static_assets(local_root: Path | None = None) -> dict:
     """Fetch static assets (GIFs, HTMLs, PNGs, scripts). Returns {repo: {path: bytes}}."""
     result = {}
@@ -1240,7 +1290,9 @@ html[data-glossary="on"] .glossary-term:focus .glossary-tooltip {
     if (!parent) return;
     var tag = parent.tagName;
     if (tag === "CODE" || tag === "PRE" || tag === "SCRIPT" || tag === "STYLE") return;
-    if (parent.closest(".glossary-term, .glossary-tooltip, .MathJax, mjx-container, h1, h2, h3")) return;
+    if (parent.closest(".glossary-term, .glossary-tooltip, .MathJax, mjx-container, .math, h1, h2, h3")) return;
+    // Skip text that contains unprocessed LaTeX delimiters
+    if (/\\$|\\\\[a-zA-Z]/.test(text)) return;
 
     var allPatterns = [];
     Object.keys(GLOSSARY).forEach(function(term) {
@@ -1317,7 +1369,15 @@ html[data-glossary="on"] .glossary-term:focus .glossary-tooltip {
         GLOSSARY = data;
         createToggle();
         applyState();
-        annotate();
+        // Wait for MathJax to finish before annotating, so that
+        // rendered math lives inside mjx-container elements and the
+        // parent.closest("mjx-container") guard in annotateNode works.
+        if (window.MathJax && MathJax.startup && MathJax.startup.promise) {
+          MathJax.startup.promise.then(annotate).catch(annotate);
+        } else {
+          // MathJax not loaded — annotate immediately
+          annotate();
+        }
       })
       .catch(function() {
         // Glossary unavailable — degrade silently
@@ -1408,6 +1468,9 @@ def main():
     generate_glossary()
     generate_glossary_page()
     generate_reference_pages()
+
+    print("\nResolving {doc} cross-references in reference pages...")
+    resolve_doc_crossrefs()
 
     # Write manifest
     manifest = generate_manifest(sources)
