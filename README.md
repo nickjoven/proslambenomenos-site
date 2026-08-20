@@ -1,39 +1,20 @@
-# proslambenomenos-site — GitHub Pages Deployment for the Unified Jupyter Book
+# proslambenomenos-site
 
-**Purpose:** Deployed version of the unified Jupyter Book site that aggregates the synchronization-gravity framework across proslambenomenos, 201, intersections, and harmonics into a single navigable resource.
+Presentation layer for [proslambenomenos](https://github.com/nickjoven/proslambenomenos).
+This repo holds chrome and a build script only — **no claim prose of
+its own**. Every deploy is built from a *pinned evidence tag*
+(`SOURCE_REF` in the workflow) of the source repository, and the
+deploy job runs only after the source's full gate suite passes in CI.
+Updating the site's content is a one-line diff: bump the ref to a
+newer sealed link.
 
-[**Live site**](https://nickjoven.github.io/proslambenomenos-site/intro.html)
+The previous pipeline (Jupyter Book aggregation of four repositories
+from moving branches, daily cron) is retired — it was presentation
+drift by design; its history remains in git. The framework content it
+served is preserved on the source repo's `archive/2026-04-framework`
+branch and is retracted; see the provenance note on the site itself.
 
----
+Local test:
 
-## What This Is
-
-This is the GitHub Pages deployment target. The `build.py` script fetches papers, notebooks, and walkthroughs from four source repositories and produces a Jupyter Book. GitHub Actions rebuilds on push.
-
-## Usage
-
-```bash
-python build.py                  # fetch from GitHub + build
-python build.py --local ../      # use local sibling repos + build
-python build.py --fetch-only     # fetch sources, skip jb build
-python build.py --check-only     # verify sources are reachable
-```
-
-**Requirements:** `pip install -r requirements.txt`
-
-## Structure
-
-```
-proslambenomenos-site/
-├── build.py            ← Fetch + build script
-├── requirements.txt    ← Jupyter Book dependencies
-├── notify-site.yml     ← GitHub Actions workflow
-└── (built output deployed to gh-pages branch)
-```
-
-## Source Repositories
-
-- [proslambenomenos](https://github.com/nickjoven/proslambenomenos) — proslambenomenos frequency, Lyapunov uniqueness, Renzo's Rule (Kuramoto side)
-- [201](https://github.com/nickjoven/201) — main framework, sparc_x API, SPARC galaxies
-- [intersections](https://github.com/nickjoven/intersections) — stick-slip dynamics, Lagrangian relaxation, CVT
-- [harmonics](https://github.com/nickjoven/harmonics) — synchronization cost derivations (D0–D29), mode-locking substrate
+    SOURCE_REF=link-002 python3 build.py --source /path/to/proslambenomenos
+    # output in site/

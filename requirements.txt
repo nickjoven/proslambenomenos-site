@@ -1,6 +1,0 @@
-jupyter-book<2
-numpy
-matplotlib
-scipy
-networkx
-plotly>=5.0

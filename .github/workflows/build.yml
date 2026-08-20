@@ -1,26 +1,22 @@
 name: Build and Deploy Site
 
 on:
-  # Trigger from source repo dispatches
   repository_dispatch:
     types: [source-updated]
-
-  # Manual trigger
   workflow_dispatch:
     inputs:
       reason:
         description: "Reason for manual rebuild"
         required: false
-
-  # Scheduled fallback — daily at 06:00 UTC
-  schedule:
-    - cron: "0 6 * * *"
-
-  # Build on pushes to main (site repo's own changes)
   push:
     branches: [main]
 
-# Only allow one build at a time
+# The site builds from a PINNED evidence tag of the source repository.
+# Updating the site's content = bumping SOURCE_REF in one visible diff.
+# No schedule: pinned content cannot drift, so there is nothing to poll.
+env:
+  SOURCE_REF: link-002
+
 concurrency:
   group: pages-deploy
   cancel-in-progress: true
@@ -31,45 +27,41 @@ permissions:
   id-token: write
 
 jobs:
-  build:
+  gates:
+    name: source gates must be green
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout site repo
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: clone source at pinned ref (full history for the gates)
+        run: |
+          git clone --branch "$SOURCE_REF" \
+            https://github.com/nickjoven/proslambenomenos.git src
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: pip
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Log trigger info
-        run: |
-          echo "Trigger: ${{ github.event_name }}"
-          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
-            echo "Source: ${{ github.event.client_payload.repository }}"
-            echo "Ref: ${{ github.event.client_payload.ref }}"
-            echo "SHA: ${{ github.event.client_payload.sha }}"
-          fi
-
-      - name: Fetch sources and build Jupyter Book
-        run: python build.py
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/setup-node@v4
         with:
-          path: book/_build/html
+          node-version: "22"
+      - run: pip install pyyaml
+      - name: run every gate in the sealed tree
+        run: cd src && python scripts/run_all.py
 
-  deploy:
-    needs: build
+  build-deploy:
+    name: build and deploy
+    needs: gates
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
-        id: deploy
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pyyaml
+      - name: build from the pinned ref
+        run: python build.py
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
         uses: actions/deploy-pages@v4
