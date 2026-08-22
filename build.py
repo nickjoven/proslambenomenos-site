@@ -11,7 +11,7 @@ is retired; this build is stdlib-only and deterministic given the ref.
 Usage:
     python3 build.py                          # clone from GitHub at SOURCE_REF
     python3 build.py --source /path/to/repo   # use a local clone (testing)
-    SOURCE_REF=link-005 python3 build.py      # build a newer sealed link
+    SOURCE_REF=link-006 python3 build.py      # build a newer sealed link
 """
 
 import argparse
