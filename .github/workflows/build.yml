@@ -15,7 +15,7 @@ on:
 # Updating the site's content = bumping SOURCE_REF in one visible diff.
 # No schedule: pinned content cannot drift, so there is nothing to poll.
 env:
-  SOURCE_REF: link-004
+  SOURCE_REF: link-005
 
 concurrency:
   group: pages-deploy
